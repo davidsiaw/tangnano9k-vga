@@ -16,5 +16,10 @@ always @(posedge clk) begin
     end
 end
 
+`ifdef FORMAL
+  assume property (clockCounter != 0);
+  assert property (clockCounter != 1);
+`endif
+
 assign led = ~ledCounter;
 endmodule
