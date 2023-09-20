@@ -1,4 +1,4 @@
-DOCKER_PREFIX=docker run --rm -ti -v $(PWD):/src --workdir /src
+DOCKER_PREFIX=docker run --rm -v $(PWD):/src --workdir /src
 DOCKER_IMAGE=davidsiaw/yosys-docker
 CMD_PREFIX=$(DOCKER_PREFIX) $(DOCKER_IMAGE)
 PRIV_PREFIX=$(DOCKER_PREFIX) --privileged -v /dev:/dev $(DOCKER_IMAGE)
