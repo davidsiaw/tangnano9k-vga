@@ -2,6 +2,7 @@ DOCKER_PREFIX=docker run --rm -v $(PWD):/src --workdir /src
 DOCKER_IMAGE=davidsiaw/yosys-docker
 CMD_PREFIX=$(DOCKER_PREFIX) $(DOCKER_IMAGE)
 PRIV_PREFIX=$(DOCKER_PREFIX) --privileged -v /dev:/dev $(DOCKER_IMAGE)
+FREQ := 27
 
 YOSYS=$(CMD_PREFIX) yosys
 NEXTPNR_GOWIN=$(CMD_PREFIX) nextpnr-gowin
@@ -48,7 +49,7 @@ obj/test.json: obj/test.ys
 	$(YOSYS) $< | tee obj/yosys.log
 
 obj/gowin_pnr_test.json: obj/test.json $(GOWIN_FPGA_CST)
-	$(NEXTPNR_GOWIN) --json $< --write $@ --device GW1NR-LV9QN88PC6/I5 --cst $(GOWIN_FPGA_CST) | tee obj/nextpnr_gowin.log
+	$(NEXTPNR_GOWIN) --json $< --write $@ --device GW1NR-LV9QN88PC6/I5 --freq $(FREQ) --cst $(GOWIN_FPGA_CST) | tee obj/nextpnr_gowin.log
 
 obj/gowin_pack.fs: obj/gowin_pnr_test.json
 	$(GOWIN_PACK) -d GW1N-9C -o $@ $< | tee obj/gowin_pack.log
