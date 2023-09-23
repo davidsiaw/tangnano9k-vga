@@ -58,7 +58,10 @@ module counter
 (
     input in_clk,
     output [5:0] led,
-    output outp
+    output outp,
+    output hsync,
+    output vsync,
+    output red
 );
 
 wire osc_clk;
@@ -73,14 +76,14 @@ defparam osc.FREQ_DIV=4;
 // https://juj.github.io/gowin_fpga_code_generators/pll_calculator.html
 // make sure you test your pll output on a real device before committing
 // certain frequencies can be very unstable and constantly loses clock lock
-rPLL #( // For GW1NR-9C C6/I5 (Tang Nano 9K proto dev board)
-  .FCLKIN("33"),
-  .IDIV_SEL(4), // -> PFD = 6.6 MHz (range: 3-400 MHz)
-  .FBDIV_SEL(11), // -> CLKOUT = 79.2 MHz (range: 3.125-600 MHz)
-  .ODIV_SEL(8) // -> VCO = 633.6 MHz (range: 400-1200 MHz)
+ rPLL #( // For GW1NR-9C C6/I5 (Tang Nano 9K proto dev board)
+  .FCLKIN("27"),
+  .IDIV_SEL(2), // -> PFD = 9 MHz (range: 3-400 MHz)
+  .FBDIV_SEL(27), // -> CLKOUT = 252 MHz (range: 3.125-600 MHz)
+  .ODIV_SEL(2) // -> VCO = 504 MHz (range: 400-1200 MHz)
 ) pll (.CLKOUTP(), .CLKOUTD(), .CLKOUTD3(), .RESET(1'b0), .RESET_P(1'b0), .CLKFB(1'b0), .FBDSEL(6'b0), .IDSEL(6'b0), .ODSEL(6'b0), .PSDA(4'b0), .DUTYDA(4'b0), .FDLY(4'b0),
-  .CLKIN(osc_clk), // 33 MHz
-  .CLKOUT(clk), // 79.2 MHz
+  .CLKIN(in_clk), // 27 MHz
+  .CLKOUT(clk), // 252 MHz
   .LOCK(clk_lock)
 );
 
@@ -89,6 +92,7 @@ reg [5:0] ledCounter = 0;
 reg [26:0] clockCounter = 0;
 reg a = 0;
 reg [7:0] ccount = 0;
+
 
 always @(posedge clk) begin
     clockCounter <= clockCounter + 1;
@@ -99,7 +103,7 @@ always @(posedge clk) begin
 
     ccount <= ccount + 1;
 
-    if(ccount == 2) begin
+    if(ccount == 4) begin
       if (a == 1) begin
           a <= 0;
       end
@@ -116,5 +120,70 @@ end
 `endif
 
 assign led = ~ledCounter;
-assign outp = clk_lock & a;
+assign outp = a;
+
+wire h_clk;
+assign h_clk = a & clk_lock;
+
+reg [10:0] hcnt = 0;
+reg [10:0] vcnt = 0;
+reg hsync_level = 1;
+reg vsync_level = 1;
+reg red_level = 0;
+
+reg cc = 0;
+
+always @(posedge h_clk) begin
+  hcnt <= hcnt + 1;
+
+  if (hcnt == 656) begin
+    hsync_level <= 0;
+  end
+  
+  if (hcnt == 752) begin
+    hsync_level <= 1;
+  end
+
+  if (hcnt == 800) begin
+    hcnt <= 0;
+    vcnt <= vcnt + 1;
+  end
+
+  if (vcnt == 490) begin
+    vsync_level <= 0;
+  end
+
+  if (vcnt == 492) begin
+    vsync_level <= 1;
+  end
+
+  if (vcnt == 525) begin
+     vcnt <= 0;
+  end
+
+  if (vcnt == 30) begin
+    cc <= 1;
+  end
+
+  if (vcnt == 80) begin
+    cc <= 0;
+  end
+  
+  if (hcnt == 30) begin
+    red_level <= 1 & cc;
+  end
+
+  if (hcnt == 80) begin
+    red_level <= 0;
+  end
+  
+
+end
+
+
+assign hsync = hsync_level;
+assign vsync = vsync_level;
+assign red = red_level;
+
+
 endmodule
