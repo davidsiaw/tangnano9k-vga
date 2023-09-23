@@ -49,7 +49,7 @@ endmodule
 module OSC(OSCOUT);
 output OSCOUT;
 
-parameter FREQ_DIV = 128;
+parameter FREQ_DIV = 100;
 parameter DEVICE = "GW1N-9";
 endmodule
 
@@ -123,7 +123,7 @@ assign led = ~ledCounter;
 assign outp = a;
 
 wire h_clk;
-assign h_clk = a & clk_lock;
+assign h_clk = a & clk_lock; // make sure a lock is achieved.
 
 reg [10:0] hcnt = 0;
 reg [10:0] vcnt = 0;
@@ -133,7 +133,9 @@ reg red_level = 0;
 
 reg cc = 0;
 
+// h_clk can be seen on output.
 always @(posedge h_clk) begin
+  // send hsync signal
   hcnt <= hcnt + 1;
 
   if (hcnt == 656) begin
@@ -149,6 +151,7 @@ always @(posedge h_clk) begin
     vcnt <= vcnt + 1;
   end
 
+  // send vsync signal
   if (vcnt == 490) begin
     vsync_level <= 0;
   end
@@ -160,7 +163,8 @@ always @(posedge h_clk) begin
   if (vcnt == 525) begin
      vcnt <= 0;
   end
-
+  
+  // draw rectangle
   if (vcnt == 30) begin
     cc <= 1;
   end
