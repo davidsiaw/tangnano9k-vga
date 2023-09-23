@@ -13,7 +13,7 @@ pins
 - vsync
 - red
 
-sometimes outp gets messed up to some high number like 42MHz when some unrelated code changes
+sometimes outp gets messed up to some high number like 42MHz when some unrelated code changes, like changing hcnt to == 100 instead of 80, the outp will explode with a 50MHz signal
 
 current thing should display a red square at the top left corner 30px offset from top and left
 

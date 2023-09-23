@@ -165,7 +165,7 @@ always @(posedge h_clk) begin
     cc <= 1;
   end
 
-  if (vcnt == 80) begin
+  if (vcnt == 100) begin
     cc <= 0;
   end
   
@@ -173,7 +173,7 @@ always @(posedge h_clk) begin
     red_level <= 1 & cc;
   end
 
-  if (hcnt == 80) begin
+  if (hcnt == 103) begin
     red_level <= 0;
   end
   
