@@ -21,3 +21,6 @@ want to do more patterns or somehow provide data to display
 
 no idea how yet
 
+about the mess upping, it now seems to stabilize when i create a delay before starting a delay count based on the pll. i guess if i load it down before its ready it will throw up some sick. strangely its consistent
+
+

@@ -87,11 +87,12 @@ defparam osc.FREQ_DIV=4;
   .LOCK(clk_lock)
 );
 
-localparam WAIT_TIME = 1048768 ;
+localparam WAIT_TIME = 1048768 * 10;
 reg [5:0] ledCounter = 0;
-reg [26:0] clockCounter = 0;
+reg [31:0] clockCounter = 0;
 reg a = 0;
 reg [7:0] ccount = 0;
+reg start = 0;
 
 
 always @(posedge clk) begin
@@ -99,18 +100,21 @@ always @(posedge clk) begin
     if (clockCounter == WAIT_TIME) begin
         clockCounter <= 0;
         ledCounter <= ledCounter + 1;
+        start <= 1;
     end
 
-    ccount <= ccount + 1;
+    if (start == 1) begin
+      ccount <= ccount + 1;
 
-    if(ccount == 4) begin
-      if (a == 1) begin
-          a <= 0;
+      if(ccount == 4) begin
+        if (a == 1) begin
+            a <= 0;
+        end
+        else begin
+            a <= 1;
+        end
+        ccount <= 0;
       end
-      else begin
-          a <= 1;
-      end
-      ccount <= 0;
     end
 end
 
@@ -132,6 +136,7 @@ reg vsync_level = 1;
 reg red_level = 0;
 
 reg cc = 0;
+reg dd = 0;
 
 // h_clk can be seen on output.
 always @(posedge h_clk) begin
@@ -164,24 +169,11 @@ always @(posedge h_clk) begin
      vcnt <= 0;
   end
   
-  // draw rectangle
-  if (vcnt == 30) begin
-    cc <= 1;
-  end
-
-  if (vcnt == 100) begin
-    cc <= 0;
-  end
+  // draw checkeboard pattern
+  cc <= vcnt[4];
+  dd <= hcnt[4];
   
-  if (hcnt == 30) begin
-    red_level <= 1 & cc;
-  end
-
-  if (hcnt == 103) begin
-    red_level <= 0;
-  end
-  
-
+  red_level <= cc ^ dd;
 end
 
 
