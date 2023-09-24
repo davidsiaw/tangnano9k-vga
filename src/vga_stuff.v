@@ -57,7 +57,7 @@ always @(posedge clk) begin
   end
 
   if (vcnt == 525) begin
-     vcnt <= 0;
+    vcnt <= 0;
   end
 end
 
