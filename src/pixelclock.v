@@ -3,11 +3,17 @@ module Clk25MHz(
   output out_clk
 );
 
+// tells us if the PLL has stabilized
+wire clk_lock;
+
 wire osc_clk;
 
 // use the rPLL to generate clock close to a multiple
 // of 2x the clock we want.
 wire fclk;
+
+// actual clock. But we only use it after clk_lock is high
+wire clk;
 
 OSC osc(
 	.OSCOUT(osc_clk)
