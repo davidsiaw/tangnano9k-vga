@@ -23,4 +23,7 @@ no idea how yet
 
 about the mess upping, it now seems to stabilize when i create a delay before starting a delay count based on the pll. i guess if i load it down before its ready it will throw up some sick. strangely its consistent
 
+using systemverilog nnow, following a style known as the two-process method.
+helps keep the combinatorial away from blocking stuff
 
+thanks to lofty also removed unnecessary commands to yosys, which let me remove copypastaed blackbox modules and generate code the way its supposed to.
