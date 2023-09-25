@@ -4,7 +4,7 @@ module VgaStuff(
   output wire [10:0] pixelx,
   output wire [10:0] pixely,
   output wire hsync,
-  output wire vsync,
+  output wire vsync
 );
 
 reg [10:0] c_hcnt;
