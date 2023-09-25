@@ -1,3 +1,14 @@
+module DisplayDriver
+(
+  input wire rst,
+  input wire clk,
+  input wire [10:0] pixelx,
+  input wire [10:0] pixely,
+  output wire r, g, b
+);
+
+endmodule
+
 module counter
 (
     input in_clk,
@@ -9,22 +20,23 @@ module counter
 );
 
 wire clk;
-
-Clk25MHz clk25(
-  .in_clk(in_clk),
-  .out_clk(clk)
-);
-
+wire clk_ready;
 wire [10:0] pixelx;
 wire [10:0] pixely;
 
+Clk25MHz clk25(
+  .in_clk(in_clk),
+  .out_clk(clk),
+  .clk_ready(clk_ready)
+);
+
 VgaStuff vga(
+  .rst(~clk_ready),
   .clk(clk),
   .pixelx(pixelx),
   .pixely(pixely),
   .hsync(hsync),
   .vsync(vsync)
-
 );
 
 reg [10:0] x0 = 50;

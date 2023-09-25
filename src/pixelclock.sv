@@ -1,6 +1,7 @@
 module Clk25MHz(
   input in_clk,
-  output out_clk
+  output out_clk,
+  output clk_ready
 );
 
 // tells us if the PLL has stabilized
@@ -34,6 +35,7 @@ rPLL #( // For GW1NR-9C C6/I5 (Tang Nano 9K proto dev board)
 );
 
 assign out_clk = clk & clk_lock;
+assign clk_ready = clk_lock;
 
 endmodule
 
